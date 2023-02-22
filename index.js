@@ -16,9 +16,8 @@ function getMinAndMax() {
       const lengthNumber = numbers.length;
 
       if (lengthNumber !== 5) {
-        console.log('You must enter five integer numbers');
-        getMinAndMax().then(resolve);
-        return;
+        process.stderr.write('You must enter five integer numbers');
+        return resolve(getMinAndMax());
       }
 
       let min = 0;
@@ -26,9 +25,8 @@ function getMinAndMax() {
 
       for (let i = 0; i < lengthNumber; i++) {
         if (!Number.isInteger(numbers[i]) || numbers[i] < 0) {
-          console.log('You entered a non-positive-integer number');
-          getMinAndMax().then(resolve);
-          return;
+          process.stderr.write('You entered a non-positive-integer number');
+          return resolve(getMinAndMax());
         }
         if (i !== 0) {
           max += numbers[i];
@@ -38,10 +36,13 @@ function getMinAndMax() {
         }
       }
 
-      resolve(console.log('Min and max: ' + min + ' ' + max));
-      rl.close();
+      resolve([min, max]);
     });
   });
 }
 
-getMinAndMax();
+(async function () {
+  const [min, max] = await getMinAndMax();
+  console.log('Min and max: ' + min + ' ' + max);
+  rl.close();
+})();
