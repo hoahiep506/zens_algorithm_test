@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/hoahiep506/zens_algorithm_test/issues"
   },
-  "homepage": "https://github.com/hoahiep506/zens_algorithm_test#readme"
+  "homepage": "https://github.com/hoahiep506/zens_algorithm_test#readme",
+  "dependencies": {
+    "bignumber.js": "^9.1.1"
+  }
 }

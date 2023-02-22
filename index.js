@@ -1,3 +1,4 @@
+const BigNumber = require('bignumber.js');
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -9,40 +10,61 @@ function getMinAndMax() {
   return new Promise((resolve) => {
     rl.question('Enter five integer numbers: ', (answer) => {
       const numbers = answer
-        .split(' ')
-        .map((number) => parseFloat(number))
-        .sort((a, b) => a - b);
+        .trim()
+        .split(/\s+/)
+        .map((number) => new BigNumber(number))
+        .sort((a, b) => a.comparedTo(b));
 
       const lengthNumber = numbers.length;
 
       if (lengthNumber !== 5) {
-        process.stderr.write('You must enter five integer numbers');
-        return resolve(getMinAndMax());
+        console.log('You must enter five integer numbers');
+        resolve(getMinAndMax());
+        return;
       }
 
-      let min = 0;
-      let max = 0;
+      let min = new BigNumber(0);
+      let max = new BigNumber(0);
 
       for (let i = 0; i < lengthNumber; i++) {
-        if (!Number.isInteger(numbers[i]) || numbers[i] < 0) {
-          process.stderr.write('You entered a non-positive-integer number');
-          return resolve(getMinAndMax());
+        if (numbers[i].isNegative() || !numbers[i].isInteger()) {
+          console.log('You entered a non-positive-integer number');
+          resolve(getMinAndMax());
+          return;
         }
         if (i !== 0) {
-          max += numbers[i];
+          max = max.plus(numbers[i]);
         }
         if (i !== lengthNumber - 1) {
-          min += numbers[i];
+          min = min.plus(numbers[i]);
         }
       }
 
-      resolve([min, max]);
+      resolve([min.toString(), max.toString()]);
     });
   });
 }
 
-(async function () {
-  const [min, max] = await getMinAndMax();
-  console.log('Min and max: ' + min + ' ' + max);
+function askToExit() {
+  return new Promise((resolve) => {
+    rl.question('Do you want to exit? (y/n): ', (answer) => {
+      if (answer.toLowerCase() === 'y') {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+async function main() {
+  let isExit = false;
+  while (!isExit) {
+    const [min, max] = await getMinAndMax();
+    console.log('Min and max: ' + min + ' ' + max);
+    isExit = await askToExit();
+  }
   rl.close();
-})();
+}
+
+main();
