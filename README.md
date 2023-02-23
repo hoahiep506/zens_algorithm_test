@@ -6,8 +6,14 @@ Install
   npm install
 ```
 
-Run test
+Run function
 
 ```bash
   node index.js
+```
+
+Run test case
+
+```bash
+  npx mocha test.js
 ```
