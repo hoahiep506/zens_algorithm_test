@@ -23,8 +23,13 @@ function getMinAndMax() {
         return;
       }
 
-      let min = new BigNumber(0);
+      let totalMin = new BigNumber(0);
+      let totalMax = new BigNumber(0);
+      let total = new BigNumber(0);
+      let min = new BigNumber(Infinity);
       let max = new BigNumber(0);
+      let odd = [];
+      let even = [];
 
       for (let i = 0; i < lengthNumber; i++) {
         if (numbers[i].isNegative() || !numbers[i].isInteger()) {
@@ -33,14 +38,35 @@ function getMinAndMax() {
           return;
         }
         if (i !== 0) {
-          max = max.plus(numbers[i]);
+          totalMax = totalMax.plus(numbers[i]);
         }
         if (i !== lengthNumber - 1) {
-          min = min.plus(numbers[i]);
+          totalMin = totalMin.plus(numbers[i]);
         }
+        if (numbers[i].modulo(2).isEqualTo(1)) {
+          odd.push(numbers[i].toString());
+        }
+        if (numbers[i].modulo(2).isEqualTo(0)) {
+          even.push(numbers[i].toString());
+        }
+        if (numbers[i].isLessThan(min)) {
+          min = numbers[i];
+        }
+        if (numbers[i].isGreaterThan(max)) {
+          max = numbers[i];
+        }
+        total = total.plus(numbers[i]);
       }
 
-      resolve([min.toString(), max.toString()]);
+      resolve([
+        total.toString(),
+        totalMin.toString(),
+        totalMax.toString(),
+        min.toString(),
+        max.toString(),
+        odd.join(' '),
+        even.join(' '),
+      ]);
     });
   });
 }
@@ -60,8 +86,13 @@ function askToExit() {
 async function main() {
   let isExit = false;
   while (!isExit) {
-    const [min, max] = await getMinAndMax();
-    console.log('Min and max: ' + min + ' ' + max);
+    const [total, totalMin, totalMax, min, max, odd, even] =
+      await getMinAndMax();
+    console.log('Total: ' + total);
+    console.log('Min sum and max sum: ' + totalMin + ' ' + totalMax);
+    console.log('Min and max : ' + min + ' ' + max);
+    console.log('Odd numbers : ' + odd);
+    console.log('Even numbers : ' + even);
     isExit = await askToExit();
   }
   rl.close();
